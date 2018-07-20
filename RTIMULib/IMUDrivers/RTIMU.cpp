@@ -135,12 +135,19 @@ RTIMU *RTIMU::createIMU(RTIMUSettings *settings)
 RTIMU::RTIMU(RTIMUSettings *settings)
 {
     m_settings = settings;
-
+  
     m_compassCalibrationMode = false;
     m_accelCalibrationMode = false;
 
     m_runtimeMagCalValid = false;
 
+    m_accelBias.setX(0.5*(m_settings->m_accelCalMax.x() + m_settings->m_accelCalMin.x()));
+    m_accelBias.setY(0.5*(m_settings->m_accelCalMax.y() + m_settings->m_accelCalMin.y()));
+    m_accelBias.setZ(0.5*(m_settings->m_accelCalMax.z() + m_settings->m_accelCalMin.z()));
+    m_accelScale.setX(0.5*(m_settings->m_accelCalMax.x() - m_settings->m_accelCalMin.x()));
+    m_accelScale.setY(0.5*(m_settings->m_accelCalMax.y() - m_settings->m_accelCalMin.y()));
+    m_accelScale.setZ(0.5*(m_settings->m_accelCalMax.z() - m_settings->m_accelCalMin.z()));
+    
     for (int i = 0; i < 3; i++) {
         m_runtimeMagCalMax[i] = -1000;
         m_runtimeMagCalMin[i] = 1000;
@@ -434,21 +441,9 @@ void RTIMU::calibrateAccel()
 {
     if (!getAccelCalibrationValid())
         return;
-
-    if (m_imuData.accel.x() >= 0)
-        m_imuData.accel.setX(m_imuData.accel.x() / m_settings->m_accelCalMax.x());
-    else
-        m_imuData.accel.setX(m_imuData.accel.x() / -m_settings->m_accelCalMin.x());
-
-    if (m_imuData.accel.y() >= 0)
-        m_imuData.accel.setY(m_imuData.accel.y() / m_settings->m_accelCalMax.y());
-    else
-        m_imuData.accel.setY(m_imuData.accel.y() / -m_settings->m_accelCalMin.y());
-
-    if (m_imuData.accel.z() >= 0)
-        m_imuData.accel.setZ(m_imuData.accel.z() / m_settings->m_accelCalMax.z());
-    else
-        m_imuData.accel.setZ(m_imuData.accel.z() / -m_settings->m_accelCalMin.z());
+    m_imuData.accel.setX((m_imuData.accel.x() - m_accelBias.x()) * m_accelScale.x());
+    m_imuData.accel.setY((m_imuData.accel.y() - m_accelBias.y()) * m_accelScale.y());
+    m_imuData.accel.setZ((m_imuData.accel.z() - m_accelBias.z()) * m_accelScale.z()); 
 }
 
 void RTIMU::updateFusion()

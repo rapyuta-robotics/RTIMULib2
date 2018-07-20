@@ -195,6 +195,9 @@ protected:
 
     static float m_axisRotation[RTIMU_AXIS_ROTATION_COUNT][9];    // array of rotation matrices
 
+    RTVector3 m_accelScale;
+    RTVector3 m_accelBias;
+
  };
 
 #endif // _RTIMU_H
