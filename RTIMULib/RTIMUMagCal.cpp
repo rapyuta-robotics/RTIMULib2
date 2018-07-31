@@ -174,8 +174,10 @@ bool RTIMUMagCal::magCalSaveRaw(const char *ellipsoidFitPath)
         sprintf(rawFile, "%s/%s", ellipsoidFitPath, RTIMUCALDEFS_MAG_RAW_FILE);
         if ((file = fopen(rawFile, "w")) == NULL) {
             HAL_ERROR("Failed to open ellipsoid fit raw data file\n");
+            delete rawFile;
             return false;
         }
+        delete rawFile;
         while (m_magCalCount > 0) {
             RTVector3 sample = removeMagCalData();
             fprintf(file, "%f %f %f\n", sample.x(), sample.y(), sample.z());
@@ -197,8 +199,10 @@ bool RTIMUMagCal::magCalSaveCorr(const char *ellipsoidFitPath)
         sprintf(corrFile, "%s/%s", ellipsoidFitPath, RTIMUCALDEFS_MAG_CORR_FILE);
         if ((file = fopen(corrFile, "r")) == NULL) {
             HAL_ERROR("Failed to open ellipsoid fit correction data file\n");
+            delete corrFile;
             return false;
         }
+        delete corrFile;
         if (fscanf(file, "%f %f %f %f %f %f %f %f %f %f %f %f",
             a + 0, a + 1, a + 2, b + 0, b + 1, b + 2, b + 3, b + 4, b + 5, b + 6, b + 7, b + 8) != 12) {
             HAL_ERROR("Ellipsoid corrcetion file didn't have 12 floats\n");
