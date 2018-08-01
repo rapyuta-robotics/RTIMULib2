@@ -61,7 +61,7 @@ float RTIMU::m_axisRotation[RTIMU_AXIS_ROTATION_COUNT][9] = {
     {-1, 0, 0, 0, -1, 0, 0, 0, 1},                  // RTIMU_XSOUTH_YWEST
     {0, 1, 0, -1, 0, 0, 0, 0, 1},                   // RTIMU_XWEST_YNORTH
 
-    {-1, 0, 0, 0, 1, 0, 0, 0, 1},                  // RTIMU_XNORTH_YWEST
+    {1, 0, 0, 0, -1, 0, 0, 0, -1},                  // RTIMU_XNORTH_YWEST
     {0, 1, 0, 1, 0, 0, 0, 0, -1},                   // RTIMU_XEAST_YNORTH
     {-1, 0, 0, 0, 1, 0, 0, 0, -1},                  // RTIMU_XSOUTH_YEAST
     {0, -1, 0, -1, 0, 0, 0, 0, -1},                 // RTIMU_XWEST_YSOUTH
@@ -311,7 +311,7 @@ void RTIMU::handleGyroBias()
             if (m_gyroSampleCount == (5 * m_sampleRate)) {
                 // this could have been true already of course
                 m_settings->m_gyroBiasValid = true;
-                m_settings->saveSettings();
+                //m_settings->saveSettings(); // Remove bias saving
             }
         } else {
             m_settings->m_gyroBias.setX((1.0 - m_gyroContinuousAlpha) * m_settings->m_gyroBias.x() + m_gyroContinuousAlpha * m_imuData.gyro.x());
