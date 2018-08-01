@@ -616,9 +616,10 @@ bool RTIMUMPU9250::IMURead()
     m_imuData.gyro.setY(-m_imuData.gyro.y());
     m_imuData.gyro.setZ(-m_imuData.gyro.z());
 
-    //  sort out accel data;
+    //  sort out accel data to NED;
 
-    m_imuData.accel.setX(-m_imuData.accel.x());
+    m_imuData.accel.setY(-m_imuData.accel.y());
+    m_imuData.accel.setZ(-m_imuData.accel.z());
 
     //  use the compass fuse data adjustments
 
