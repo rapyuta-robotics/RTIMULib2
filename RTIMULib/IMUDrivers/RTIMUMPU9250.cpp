@@ -585,14 +585,12 @@ bool RTIMUMPU9250::IMURead()
 
 #else
 
-    if (count > MPU9250_FIFO_CHUNK_SIZE * 40) {
-        // more than 40 samples behind - going too slowly so discard some samples but maintain timestamp correctly
-        while (count >= MPU9250_FIFO_CHUNK_SIZE * 10) {
-            if (!m_settings->HALRead(m_slaveAddr, MPU9250_FIFO_R_W, MPU9250_FIFO_CHUNK_SIZE, fifoData, "Failed to read fifo data"))
-                return false;
-            count -= MPU9250_FIFO_CHUNK_SIZE;
-            m_imuData.timestamp += m_sampleInterval;
-        }
+    // more than 10 samples behind - going too slowly so discard some samples but maintain timestamp correctly
+    while (count >= MPU9250_FIFO_CHUNK_SIZE * 10) {
+        if (!m_settings->HALRead(m_slaveAddr, MPU9250_FIFO_R_W, MPU9250_FIFO_CHUNK_SIZE, fifoData, "Failed to read fifo data"))
+            return false;
+        count -= MPU9250_FIFO_CHUNK_SIZE;
+        m_imuData.timestamp += m_sampleInterval;
     }
 
     if (count < MPU9250_FIFO_CHUNK_SIZE)
@@ -612,7 +610,6 @@ bool RTIMUMPU9250::IMURead()
 
     //  sort out gyro axes
 
-    m_imuData.gyro.setX(m_imuData.gyro.x());
     m_imuData.gyro.setY(-m_imuData.gyro.y());
     m_imuData.gyro.setZ(-m_imuData.gyro.z());
 
