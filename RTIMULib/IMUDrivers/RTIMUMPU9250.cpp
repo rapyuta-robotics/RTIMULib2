@@ -585,16 +585,16 @@ bool RTIMUMPU9250::IMURead()
 
 #else
 
-    // more than 10 samples behind - going too slowly so discard some samples but maintain timestamp correctly
-    while (count >= MPU9250_FIFO_CHUNK_SIZE * 10) {
+    if (count < MPU9250_FIFO_CHUNK_SIZE)
+        return false;
+
+    // more than 2 samples behind - going too slowly so discard samples but maintain timestamp correctly
+    while (count > MPU9250_FIFO_CHUNK_SIZE * 2) {
         if (!m_settings->HALRead(m_slaveAddr, MPU9250_FIFO_R_W, MPU9250_FIFO_CHUNK_SIZE, fifoData, "Failed to read fifo data"))
             return false;
         count -= MPU9250_FIFO_CHUNK_SIZE;
         m_imuData.timestamp += m_sampleInterval;
     }
-
-    if (count < MPU9250_FIFO_CHUNK_SIZE)
-        return false;
 
     if (!m_settings->HALRead(m_slaveAddr, MPU9250_FIFO_R_W, MPU9250_FIFO_CHUNK_SIZE, fifoData, "Failed to read fifo data"))
         return false;
